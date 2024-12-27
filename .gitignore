@@ -1,0 +1,6 @@
+.idea/
+*.tar
+*.dylib
+*.bin
+cmake-build-*/
+.DS_Store
