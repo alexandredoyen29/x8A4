@@ -111,9 +111,9 @@ add_custom_command(TARGET x8A4_CLI POST_BUILD
         COMMENT "Signing x8A4_CLI"
 )
 #
-SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
+#SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
