@@ -284,8 +284,7 @@ uint64_t get_our_task(void) {
     x8A4_log_error("Ourproc is zero!\n", "");
     return 0;
   }
-  if (strcmp(gXPF.darwinVersion, "22.0.0") >= 0 &&
-      strcmp(gXPF.darwinVersion, "22.4.0") != 0) {
+  if (strcmp(gXPF.darwinVersion, "22.0.0") >= 0) {
     our_task_cached = proc + koffsets_cached->proc_struct_size;
   } else {
     int ret = kread(proc + koffsets_cached->proc_task, &proc, 8);

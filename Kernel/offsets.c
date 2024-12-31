@@ -39,7 +39,7 @@ int offsets_init(void) {
   bool ios_1600 = (strcmp(gXPF.darwinVersion, "22.0.0") >= 0);
   bool ios_1610 = (strcmp(gXPF.darwinVersion, "22.1.0") >= 0);
   bool ios_1630 = (strcmp(gXPF.darwinVersion, "22.3.0") >= 0);
-  bool ios_1640b = (strcmp(gXPF.darwinVersion, "22.4.0") == 0);
+  bool ios_1640 = (strcmp(gXPF.darwinVersion, "22.4.0") >= 0);
   bool ios_1700 = (strcmp(gXPF.darwinVersion, "23.0.0") >= 0);
   bool ios_1800 = (strcmp(gXPF.darwinVersion, "24.0.0") >= 0);
   bool ios_1810 = (strcmp(gXPF.darwinVersion, "24.1.0") >= 0);
@@ -75,15 +75,14 @@ int offsets_init(void) {
     koffsets_cached->proc_pid = 0x60;
     koffsets_cached->smr = 0x3;
     koffsets_cached->io_dt_nvram = 0xC0;
-    if (!ios_1640b) {
-      koffsets_cached->proc_task = 0x0;
-    }
   }
   if (ios_1610) {
     koffsets_cached->table_smr = 0x1;
   }
   if (ios_1630) {
     koffsets_cached->smr = 0x2;
+  }
+  if (ios_1640) {
   }
   if (ios_1700) {
     koffsets_cached->ipc_port_kobject = 0x48;

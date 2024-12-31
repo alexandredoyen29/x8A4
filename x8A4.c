@@ -1049,7 +1049,7 @@ uint8_t *x8A4_get_apnonce(uint32_t *apnonce_size) {
   uint8_t *generator = x8A4_get_apnonce_generator(&generator_size);
   if (!generator || ((generator_size & 0xFFFFFFFF) != 0x12 &&
                      (generator_size & 0xFFFFFFFF) != 0x13)) {
-    x8A4_log_error("Failed to get apnonce generator! (%zu:0x%016llX",
+    x8A4_log_error("Failed to get apnonce generator! (%zu:0x%016llX)\n",
                    generator_size, generator);
     return NULL;
   }
