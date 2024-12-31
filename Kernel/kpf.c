@@ -34,13 +34,9 @@ int xpf_setup_fileset_sections(void) {
   if (gXPF.kernelIsFileset &&
       !(apple_image4_fileset_sections[0] && apple_image4_fileset_sections[1] &&
         apple_image4_fileset_sections[2])) {
-    apple_image4_fileset_sections[0] = pfsec_init_from_macho(
-        gXPF.kernel, "com.apple.security.AppleImage4", "__TEXT_EXEC", "__text");
-    apple_image4_fileset_sections[1] =
-        pfsec_init_from_macho(gXPF.kernel, "com.apple.security.AppleImage4",
-                              "__DATA_CONST", "__const");
-    apple_image4_fileset_sections[2] = pfsec_init_from_macho(
-        gXPF.kernel, "com.apple.security.AppleImage4", "__TEXT", "__cstring");
+    apple_image4_fileset_sections[0] = xpf_pfsec_init("com.apple.security.AppleImage4", "__TEXT_EXEC", "__text");
+    apple_image4_fileset_sections[1] = xpf_pfsec_init("com.apple.security.AppleImage4", "__DATA_CONST", "__const");
+    apple_image4_fileset_sections[2] = xpf_pfsec_init("com.apple.security.AppleImage4", "__TEXT", "__cstring");
     return (apple_image4_fileset_sections[0] &&
             apple_image4_fileset_sections[1] &&
             apple_image4_fileset_sections[2])
@@ -74,12 +70,15 @@ uint64_t xpf_find_nonce_slots_array(void) {
     return 0;
   }
   PFSection *kernel_security_appleimage4_text_section = NULL;
-  PFSection *kernel_security_appleimage4_dataconst_section;
-  PFSection *kernel_security_appleimage4_string_section;
+  PFSection *kernel_security_appleimage4_dataconst_section = NULL;
+  PFSection *kernel_security_appleimage4_string_section = NULL;
   if (gXPF.kernelIsFileset) {
     if (xpf_setup_fileset_sections()) {
       return 0;
     }
+    kernel_security_appleimage4_text_section = apple_image4_fileset_sections[0];
+    kernel_security_appleimage4_dataconst_section = apple_image4_fileset_sections[1];
+    kernel_security_appleimage4_string_section = apple_image4_fileset_sections[2];
   } else {
     if (strcmp(gXPF.darwinVersion, "22.0.0") >= 0) {
       kernel_security_appleimage4_text_section = gXPF.kernelPLKTextSection;
@@ -100,7 +99,7 @@ uint64_t xpf_find_nonce_slots_array(void) {
   }
   if (kpf_nonce_domains_cached) {
     return pfsec_arm64_resolve_adrp_ldr_str_add_reference_auto(
-        kernel_security_appleimage4_dataconst_section, kpf_nonce_domains_cached + 4);
+        kernel_security_appleimage4_text_section, kpf_nonce_domains_cached + 4);
   }
   PFStringMetric *krn_metric =
       pfmetric_string_init(kAppleSystemVarGUID"krn.");
@@ -143,7 +142,7 @@ uint64_t xpf_find_nonce_slots_array(void) {
     return 0;
   }
   uint64_t nonce_domains = pfsec_arm64_resolve_adrp_ldr_str_add_reference_auto(
-      kernel_security_appleimage4_dataconst_section, prev_adrp_addr + 4);
+      kernel_security_appleimage4_text_section, prev_adrp_addr + 4);
   if (!nonce_domains) {
     x8A4_log_error("Failed to find nonce domains array!\n", "");
     return 0;
@@ -161,12 +160,15 @@ uint64_t xpf_find_nonce_domains_array(void) {
     return xpf_find_nonce_slots_array();
   }
   PFSection *kernel_security_appleimage4_text_section = NULL;
-  PFSection *kernel_security_appleimage4_dataconst_section;
-  PFSection *kernel_security_appleimage4_string_section;
+  PFSection *kernel_security_appleimage4_dataconst_section = NULL;
+  PFSection *kernel_security_appleimage4_string_section = NULL;
   if (gXPF.kernelIsFileset) {
     if (xpf_setup_fileset_sections()) {
       return 0;
     }
+    kernel_security_appleimage4_text_section = apple_image4_fileset_sections[0];
+    kernel_security_appleimage4_dataconst_section = apple_image4_fileset_sections[1];
+    kernel_security_appleimage4_string_section = apple_image4_fileset_sections[2];
   } else {
     if (strcmp(gXPF.darwinVersion, "22.0.0") >= 0) {
       kernel_security_appleimage4_text_section = gXPF.kernelPLKTextSection;
@@ -188,7 +190,7 @@ uint64_t xpf_find_nonce_domains_array(void) {
   if (kpf_nonce_domains_cached) {
     return kpf_nonce_domains_cached;
 //    return pfsec_arm64_resolve_adrp_ldr_str_add_reference_auto(
-//        kernel_security_appleimage4_dataconst_section, kpf_nonce_domains_cached + 4);
+//        kernel_security_appleimage4_text_section, kpf_nonce_domains_cached + 4);
   }
   PFStringMetric *nonce_domain_metric =
       pfmetric_string_init("invalid nonce domain: %llu");
@@ -231,7 +233,7 @@ uint64_t xpf_find_nonce_domains_array(void) {
     return 0;
   }
   uint64_t nonce_domains = pfsec_arm64_resolve_adrp_ldr_str_add_reference_auto(
-      kernel_security_appleimage4_dataconst_section, prev_adrp_addr + 4);
+      kernel_security_appleimage4_text_section, prev_adrp_addr + 4);
   if (!nonce_domains) {
     x8A4_log_error("Failed to find nonce domains array!\n", "");
     return 0;
@@ -255,6 +257,9 @@ int xpf_find_nonce_slots_array_length(void) {
     if (xpf_setup_fileset_sections()) {
       return 0;
     }
+    kernel_security_appleimage4_text_section = apple_image4_fileset_sections[0];
+    kernel_security_appleimage4_dataconst_section = apple_image4_fileset_sections[1];
+    kernel_security_appleimage4_string_section = apple_image4_fileset_sections[2];
   } else {
     if (strcmp(gXPF.darwinVersion, "22.0.0") >= 0) {
       kernel_security_appleimage4_text_section = gXPF.kernelPLKTextSection;
@@ -316,6 +321,9 @@ int xpf_find_nonce_domains_array_length(uint64_t nonce_domains_array_addr) {
     if (xpf_setup_fileset_sections()) {
       return 0;
     }
+    kernel_security_appleimage4_text_section = apple_image4_fileset_sections[0];
+    kernel_security_appleimage4_dataconst_section = apple_image4_fileset_sections[1];
+    kernel_security_appleimage4_string_section = apple_image4_fileset_sections[2];
   } else {
     if (strcmp(gXPF.darwinVersion, "22.0.0") >= 0) {
       kernel_security_appleimage4_text_section = gXPF.kernelPLKTextSection;
@@ -418,6 +426,9 @@ int xpf_find_cryptex_boot_domain_index(uint64_t nonce_domains_array_addr,
     if (xpf_setup_fileset_sections()) {
       return 0;
     }
+    kernel_security_appleimage4_text_section = apple_image4_fileset_sections[0];
+    kernel_security_appleimage4_dataconst_section = apple_image4_fileset_sections[1];
+    kernel_security_appleimage4_string_section = apple_image4_fileset_sections[2];
   } else {
     if (strcmp(gXPF.darwinVersion, "22.0.0") >= 0) {
       kernel_security_appleimage4_text_section = gXPF.kernelPLKTextSection;

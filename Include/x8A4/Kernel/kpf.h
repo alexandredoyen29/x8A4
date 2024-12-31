@@ -19,6 +19,9 @@
 #include <stdint.h>
 #include <XPF/xpf.h>
 
+/* External prototypes */
+extern PFSection *xpf_pfsec_init(const char *filesetEntryId, const char *segName, const char *sectName);
+
 /* Prototypes */
 int xpf_setup_fileset_sections(void);
 void xpf_free_fileset_sections(void);
