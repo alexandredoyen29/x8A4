@@ -6,7 +6,7 @@
  * @file x8A4.h
  * @author Cryptiiiic
  * @brief This file is the header file for x8A4.c
- * @version 1.0.0
+ * @version 1.0.1
  * @date 2024-04-14
  *
  * @copyright Copyright (c) 2024
@@ -103,7 +103,7 @@ struct x8A4_nonce_seeds_slot {
 } __attribute__((packed, aligned(1)));
 
 /* Defines */
-#define X8A4_API_VERSION "1.0.0"
+#define X8A4_API_VERSION "1.0.1"
 #define X8A4_ABI_VERSION SOVERSION
 
 /* Prototypes */

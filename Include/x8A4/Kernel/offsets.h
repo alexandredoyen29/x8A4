@@ -6,7 +6,7 @@
  * @file offsets.h
  * @author Cryptiiiic
  * @brief This file is the header file for offsets.c
- * @version 1.0.0
+ * @version 1.0.1
  * @date 2024-04-19
  *
  * @copyright Copyright (c) 2024

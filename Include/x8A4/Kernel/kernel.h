@@ -6,7 +6,7 @@
  * @file kernel.h
  * @author Cryptiiiic
  * @brief This file is the header file for kernel.c
- * @version 1.0.0
+ * @version 1.0.1
  * @date 2024-04-14
  *
  * @copyright Copyright (c) 2024

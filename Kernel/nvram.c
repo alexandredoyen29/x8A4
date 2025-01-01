@@ -6,7 +6,7 @@
  * @file nvram.c
  * @author Cryptiiiic
  * @brief This file is for all kernel nvram related code.
- * @version 1.0.0
+ * @version 1.0.1
  * @date 2024-12-19
  *
  * @copyright Copyright (c) 2024

@@ -6,7 +6,7 @@
  * @file logger.c
  * @author Cryptiiiic
  * @brief This file is for all logger related code.
- * @version 1.0.0
+ * @version 1.0.1
  * @date 2024-12-22
  *
  * @copyright Copyright (c) 2024
