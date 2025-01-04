@@ -35,6 +35,19 @@ int offsets_init(void) {
     x8A4_log_error("Failed XPF kernel darwinVersion is NULL!\n", "");
     return -1;
   }
+  if(strcmp(gXPF.darwinVersion, "16.0.0") < 0) {
+    x8A4_log_error("Unsupported iOS version!\n", "");
+    return -1;
+  }
+  bool ios_1000 = (strcmp(gXPF.darwinVersion, "16.0.0") >= 0);
+  bool ios_1100 = (strcmp(gXPF.darwinVersion, "17.0.0") >= 0);
+  bool ios_1200 = (strcmp(gXPF.darwinVersion, "18.0.0") >= 0);
+  bool ios_1300 = (strcmp(gXPF.darwinVersion, "19.0.0") == 0);
+  bool ios_1300b2 = (strcmp(gXPF.darwinVersion, "19.0.0") >= 0) && (strcmp(gXPF.xnuBuild, "6110.0.0.120.8") >= 0);
+  bool ios_1400 = (strcmp(gXPF.darwinVersion, "20.0.0") == 0);
+  bool ios_1430b = (strcmp(gXPF.darwinVersion, "20.2.0") >= 0) && (strcmp(gXPF.xnuBuild, "7195.50.3.201.1") >= 0);
+  bool ios_1430b_ = (strcmp(gXPF.darwinVersion, "20.2.0") >= 0) && (strcmp(gXPF.xnuBuild, "7195.60.69") >= 0);
+  bool ios_1500 = (strcmp(gXPF.darwinVersion, "21.0.0") >= 0);
   bool ios_1540 = (strcmp(gXPF.darwinVersion, "21.4.0") >= 0);
   bool ios_1600 = (strcmp(gXPF.darwinVersion, "22.0.0") >= 0);
   bool ios_1610 = (strcmp(gXPF.darwinVersion, "22.1.0") >= 0);
@@ -48,18 +61,18 @@ int offsets_init(void) {
     x8A4_log_error("Failed calloc kernel_offsets, impossible!\n", "");
     return -1;
   }
-  koffsets_cached->proc_pid = 0x68;
-  koffsets_cached->proc_task = 0x10;
+  koffsets_cached->proc_pid = 0x10;
+  koffsets_cached->proc_task = 0x18;
   koffsets_cached->proc_list_next = 0x0;
   koffsets_cached->task_itk_space_table = 0x20;
   koffsets_cached->table_smr = 0x0;
   koffsets_cached->smr = 0x0;
   koffsets_cached->ipc_entry_object = 0x0;
   koffsets_cached->ipc_entry_size = 0x18;
-  koffsets_cached->ipc_port_kobject = 0x58;
+  koffsets_cached->ipc_port_kobject = 0x68;
   koffsets_cached->ipc_port_kobject_is_iomachport = 0x0;
   koffsets_cached->iomachport_object = 0x30;
-  koffsets_cached->io_dt_nvram = 0xC8;
+  koffsets_cached->io_dt_nvram = 0xC0;
   koffsets_cached->os_dict = 0x20;
   koffsets_cached->os_dict_size = 0x14;
   koffsets_cached->os_string = 0x10;
@@ -67,6 +80,34 @@ int offsets_init(void) {
   koffsets_cached->os_data = 0x18;
   koffsets_cached->io_aes_accel_special_keys = 0xD0;
   koffsets_cached->io_aes_accel_special_keys_size = 0xD8;
+  if (ios_1000) {
+  }
+  if (ios_1100) {
+  }
+  if (ios_1200) {
+    koffsets_cached->proc_pid = 0x60;
+    koffsets_cached->proc_task = 0x10;
+  }
+  if (ios_1300) {
+  }
+  if (ios_1300b2) {
+    koffsets_cached->proc_pid = 0x68;
+  }
+  if (ios_1400) {
+    koffsets_cached->io_dt_nvram = 0xB8;
+  }
+  if (ios_1430b) {
+    koffsets_cached->io_dt_nvram = 0xC0;
+  }
+  if (ios_1430b_) {
+    koffsets_cached->io_dt_nvram = 0xC8;
+  }
+  if (ios_1500) {
+    koffsets_cached->proc_pid = 0x68;
+    koffsets_cached->proc_task = 0x10;
+    koffsets_cached->ipc_port_kobject = 0x58;
+    koffsets_cached->io_dt_nvram = 0xC8;
+  }
   if (ios_1540) {
     koffsets_cached->ipc_port_kobject = 0x48;
     koffsets_cached->io_dt_nvram = 0xB8;
