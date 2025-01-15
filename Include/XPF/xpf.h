@@ -45,6 +45,7 @@ typedef struct s_XPF {
 	MachO *kernel;
 	bool kernelIsFileset;
 	bool kernelIsArm64e;
+	bool kernelIsSptm;
 	char *kernelVersionString;
 	char *kernelInfoPlist;
 	char *darwinVersion;
@@ -66,6 +67,7 @@ typedef struct s_XPF {
 	PFSection *kernelPLKTextSection;
 	PFSection *kernelPLKDataConstSection;
 	PFSection *kernelBootdataInit;
+	PFSection *kernelBootCodeTextSection;
 	PFSection *kernelAMFITextSection;
 	PFSection *kernelAMFIStringSection;
 	PFSection *kernelSandboxTextSection;

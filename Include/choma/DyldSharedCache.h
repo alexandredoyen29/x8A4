@@ -22,12 +22,13 @@ typedef struct DyldSharedCacheMapping {
 	uint64_t fileoff;
 	void *ptr;
 	uint64_t size;
-	struct DyldSharedCacheFile *file;
 	uint32_t maxProt;
 	uint32_t initProt;
+	uint64_t flags;
+	// ABI stable until here
 	void *slideInfoPtr;
 	uint64_t slideInfoSize;
-	uint64_t flags;
+	struct DyldSharedCacheFile *file;
 } DyldSharedCacheMapping;
 
 typedef struct DyldSharedCacheImage {
@@ -46,6 +47,7 @@ typedef struct DyldSharedCache {
 	DyldSharedCacheFile **files;
 
 	struct {
+		bool loaded;
 		unsigned index;
 		void *nlist;
 		uint32_t nlistCount;
@@ -84,6 +86,7 @@ DyldSharedCache *dsc_init_from_path_premapped(const char *path, uint32_t premapS
 DyldSharedCache *dsc_init_from_path(const char *path);
 void dsc_enumerate_files(DyldSharedCache *sharedCache, void (^enumeratorBlock)(const char *filepath, size_t filesize, struct dyld_cache_header *header));
 
+void dsc_enumerate_mappings(DyldSharedCache *sharedCache, void (^enumeratorBlock)(DyldSharedCacheMapping *mapping, DyldSharedCacheFile *sourceFile, bool *stop));
 DyldSharedCacheMapping *dsc_lookup_mapping(DyldSharedCache *sharedCache, uint64_t vmaddr, uint64_t size);
 void *dsc_find_buffer(DyldSharedCache *sharedCache, uint64_t vmaddr, uint64_t size);
 
@@ -94,7 +97,9 @@ uint64_t dsc_vmaddr_to_fileoff(DyldSharedCache *sharedCache, uint64_t vmaddr, Dy
 
 void dsc_enumerate_images(DyldSharedCache *sharedCache, void (^enumeratorBlock)(const char *path, DyldSharedCacheImage *imageHandle, MachO *imageMachO, bool *stop));
 DyldSharedCacheImage *dsc_find_image_for_section_address(DyldSharedCache *sharedCache, uint64_t address);
+MachO *dsc_image_get_macho(DyldSharedCacheImage *image);
 DyldSharedCacheImage *dsc_lookup_image_by_address(DyldSharedCache *sharedCache, uint64_t address);
+MachO *dsc_lookup_macho_by_address(DyldSharedCache *sharedCache, uint64_t address, DyldSharedCacheImage **imageHandleOut);
 DyldSharedCacheImage *dsc_lookup_image_by_path(DyldSharedCache *sharedCache, const char *path);
 MachO *dsc_lookup_macho_by_path(DyldSharedCache *sharedCache, const char *path, DyldSharedCacheImage **imageHandleOut);
 int dsc_enumerate_chained_fixups(DyldSharedCache *sharedCache, void (^enumeratorBlock)(DyldSharedCachePointer *pointer, bool *stop));

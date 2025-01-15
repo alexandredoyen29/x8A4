@@ -8,16 +8,33 @@ if(NOT DEFINED CMAKE_OSX_ARCHITECTURES OR arch_not_set)
 endif()
 set(CMAKE_OSX_DEPLOYMENT_TARGET "")
 
-execute_process(COMMAND xcrun --sdk iphoneos --show-sdk-path
+find_program(LDID ldid2)
+if(NOT LDID)
+    find_program(LDID ldid)
+    if(NOT LDID)
+        message(FATAL_ERROR "Please install Procursus ldid before building! (https://github.com/ProcursusTeam/ldid)")
+    endif()
+endif()
+
+find_program(XCRUN xcrun)
+if(XCRUN)
+execute_process(COMMAND ${XCRUN} --sdk iphoneos --show-sdk-path
         OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
         ERROR_QUIET
         OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-if(NOT DEFINED VERSION_COMMIT_COUNT)
-    execute_process(COMMAND git rev-list --count HEAD WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}" OUTPUT_VARIABLE VERSION_COMMIT_COUNT ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
-if(NOT DEFINED VERSION_COMMIT_SHA)
-    execute_process(COMMAND git rev-parse HEAD WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}" OUTPUT_VARIABLE VERSION_COMMIT_SHA ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+find_program(GIT git)
+if(GIT)
+    if(NOT DEFINED VERSION_COMMIT_COUNT)
+        execute_process(COMMAND ${GIT} rev-list --count HEAD WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}" OUTPUT_VARIABLE VERSION_COMMIT_COUNT ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+    endif()
+    if(NOT DEFINED VERSION_COMMIT_SHA)
+        execute_process(COMMAND ${GIT} rev-parse HEAD WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}" OUTPUT_VARIABLE VERSION_COMMIT_SHA ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+    endif()
+else()
+    set(VERSION_COMMIT_COUNT "0")
+    set(VERSION_COMMIT_SHA "unknown")
 endif()
 
 add_library(x8A4 STATIC SHARED x8A4.c
@@ -41,7 +58,8 @@ add_library(x8A4 STATIC SHARED x8A4.c
         Include/x8A4/Kernel/nvram.h)
 
 target_include_directories(x8A4 PRIVATE
-        "${CMAKE_SOURCE_DIR}/include")
+        "${CMAKE_SOURCE_DIR}/Include/choma"
+        "${CMAKE_SOURCE_DIR}/Include")
 
 set(RPATH "/var/jb/usr/lib")
 set(RPATH2 "/usr/lib")
@@ -80,7 +98,7 @@ if(DEFINED RELEASE)
     add_definitions(-DRELEASE="1")
 endif()
 
-target_include_directories(x8A4_CLI PRIVATE "${CMAKE_SOURCE_DIR}/include")
+target_include_directories(x8A4_CLI PRIVATE "${CMAKE_SOURCE_DIR}/Include")
 
 set(RPATH "/var/jb/usr/lib")
 set(RPATH2 "/usr/lib")
@@ -101,13 +119,13 @@ target_link_libraries(x8A4_CLI
         "x8A4")
 
 add_custom_command(TARGET x8A4 POST_BUILD
-        COMMAND ldid -S -Hsha256 -Cadhoc ${CMAKE_CURRENT_BINARY_DIR}/libx8A4.${SOVERSION}.dylib
+        COMMAND ${LDID} -S -Hsha256 -Cadhoc ${CMAKE_CURRENT_BINARY_DIR}/libx8A4.${SOVERSION}.dylib
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Signing libx8A4.${SOVERSION}.dylib..."
 )
 
 add_custom_command(TARGET x8A4_CLI POST_BUILD
-        COMMAND ldid -Stfp0.plist -Hsha256 -Cadhoc ${CMAKE_CURRENT_BINARY_DIR}/x8A4_CLI
+        COMMAND ${LDID} -Stfp0.plist -Hsha256 -Cadhoc ${CMAKE_CURRENT_BINARY_DIR}/x8A4_CLI
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Signing x8A4_CLI"
 )
