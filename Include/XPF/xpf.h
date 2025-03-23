@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include <choma/Fat.h>
+#include <choma/FAT.h>
 #include <choma/Util.h>
 #include <choma/PatchFinder.h>
 #include <choma/PatchFinder_arm64.h>

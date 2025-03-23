@@ -13,6 +13,9 @@
  */
 
 /* Include headers */
+#include "Include/libkrw_plugin.h"
+#include "Include/x8A4/Registry/registry.h"
+#include "Include/x8A4/Services/services.h"
 #include <x8A4/Logger/logger.h>
 #include <x8A4/Kernel/osobject.h>
 #include <x8A4/Kernel/nvram.h>
