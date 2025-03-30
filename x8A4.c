@@ -1440,7 +1440,9 @@ void x8A4_cli_get_cryptex_nonce(void) {
   } else {
     x8A4_log("Done!\n", "");
     x8A4_log("Got cryptex nonce (0x", "");
-    for (int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) {
+    int digest_len = get_hash_len();
+    digest_len = (digest_len == CC_SHA384_DIGEST_LENGTH) ? CC_SHA256_DIGEST_LENGTH : CC_SHA1_DIGEST_LENGTH;
+    for (int i = 0; i < digest_len; i++) {
       fflush(stdout);
       x8A4_log("%02X", *(nonce + i));
     }

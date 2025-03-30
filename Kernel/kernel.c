@@ -67,6 +67,10 @@ int tfp0_init(void) {
  */
 int xpf_init(void) {
   int ret = xpf_start_with_kernel_path(get_kernel_path());
+  const char *err = xpf_get_error();
+  if(err) {
+    x8A4_log_error("Can't proceed with kernel init, failed to start xpf with kernel: \"%s\" error: %s\n", get_kernel_path(), err);
+  }
   if(!ret) {
     x8A4_set_nonce_format();
   }
@@ -95,12 +99,25 @@ const char *get_kernel_path(void) {
   }
   char boot_manifest_hash_str[104];
   uint32_t *boot_manifest_hash_str_ptr = (uint32_t *)boot_manifest_hash_str;
+  int cnt = 0;
+  int sz = 0;
+  int end = 0;
+  int hash_len = get_hash_len();
+  if(hash_len == CC_SHA1_DIGEST_LENGTH) {
+    cnt = 10;
+    sz = 20;
+    end = 40;
+  } else if(hash_len == CC_SHA384_DIGEST_LENGTH) {
+    cnt = 10;
+    sz = 32;
+    end = 96;
+  }
   int j = 0;
-  for(int i = 0; i < 10; i++) {
-    snprintf((void *)&boot_manifest_hash_str_ptr[j], 32, "%08X%08X%08X%08X\n", __builtin_bswap32(boot_manifest_hash[i + 0]), __builtin_bswap32(boot_manifest_hash[i + 1]), __builtin_bswap32(boot_manifest_hash[i + 2]), __builtin_bswap32(boot_manifest_hash[i + 3]));
+  for(int i = 0; i < cnt; i++) {
+    snprintf((void *)&boot_manifest_hash_str_ptr[j], sz, "%08X%08X%08X%08X\n", __builtin_bswap32(boot_manifest_hash[i + 0]), __builtin_bswap32(boot_manifest_hash[i + 1]), __builtin_bswap32(boot_manifest_hash[i + 2]), __builtin_bswap32(boot_manifest_hash[i + 3]));
     j+=2;
   }
-  boot_manifest_hash_str[96] = '\0';
+  boot_manifest_hash_str[end] = '\0';
 
   const char *format = "/private/preboot/%s/System/Library/Caches/"
                        "com.apple.kernelcaches/kernelcache";
