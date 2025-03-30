@@ -5,7 +5,7 @@
 #include <mach-o/fat.h>
 #include <mach-o/loader.h>
 #include "MemoryStream.h"
-#include "FAT.h"
+#include "Fat.h"
 #include "DyldSharedCache.h"
 
 typedef struct MachOSegment
