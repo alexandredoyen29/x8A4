@@ -1,6 +1,4 @@
 #include <IOKit/IOKitLib.h>
-#include <cstddef>
-#include <cstdint>
 #include <iokernelrw.h>
 #include <mach/arm/kern_return.h>
 #include <mach/kern_return.h>
