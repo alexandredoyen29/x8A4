@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
       case 'p':
         if (optarg)
         {
-          
+          set_krw_plugin(optarg);
         }
 
         break;
