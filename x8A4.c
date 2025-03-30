@@ -21,6 +21,7 @@
 #include <dlfcn.h>
 #include <libkrw.h>
 #include <libkrw_plugin.h>
+#include <stdlib.h>
 
 /* Cached Variables */
 int init_done = 0;
@@ -1640,6 +1641,10 @@ void x8A4_cli_set_cryptex_seed(const char *new_seed) {
   x8A4_log("Successfully set cryptex seed(%s)!\n", new_seed);
 }
 
+/**
+ * @brief          CLI set Kernel I/O plugin
+ * @param[in]      path Path to the plugin's compiled '.so'
+ */
 void x8A4_cli_set_krw_plugin(const char* path)
 {
   void* loadedPlugin;
@@ -1649,28 +1654,36 @@ void x8A4_cli_set_krw_plugin(const char* path)
 
   if (path == NULL)
   {
-    return;
+    x8A4_log("path is NULL (%s:%d)\n", __FILE__, __LINE__);
+    x8A4_destructor();
+    exit(EXIT_FAILURE);
   }
 
   krw_handlers = calloc(1, sizeof(struct krw_handlers_s));
 
   if (krw_handlers == NULL)
   {
-    // TODO : ERROR
+    x8A4_log("Unable to calloc krw_handlers (%s:%d)\n", __FILE__, __LINE__);
+    x8A4_destructor();
+    exit(EXIT_FAILURE);
   }
 
   loadedPlugin = dlopen(path, RTLD_NOW);
 
   if (loadedPlugin == NULL)
   {
-    // TODO : ERROR
+    x8A4_log("Unable to dlopen \"%s\" (%s:%d)\n", path, __FILE__, __LINE__);
+    x8A4_destructor();
+    exit(EXIT_FAILURE);
   }
 
   pluginInitializer = dlsym(loadedPlugin, "krw_plugin_initializer");
 
   if (pluginInitializer == NULL)
   {
-    // TODO : ERROR (I would like to have monads in C :))
+    x8A4_log("Unable to dlsym \"krw_plugin_initializer\" in \"%s\" (%s:%d)\n", path, __FILE__, __LINE__);
+    x8A4_destructor();
+    exit(EXIT_FAILURE);
   }
 
   pluginInitializer(krw_handlers);
