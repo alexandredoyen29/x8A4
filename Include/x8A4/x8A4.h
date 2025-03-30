@@ -16,6 +16,7 @@
 #define X8A4_X8A4_H
 
 /* Include headers */
+#include <libkrw_plugin.h>
 #include <stdint.h>
 #include <x8A4/Kernel/kernel.h>
 #include <x8A4/Kernel/kpf.h>
@@ -150,6 +151,7 @@ void x8A4_cli_clear_apnonce_generator(void);
 void x8A4_cli_get_accel_keys(uint32_t chosen_key);
 void x8A4_cli_get_nonce_seeds(void);
 void x8A4_cli_set_cryptex_seed(const char *new_seed);
+void x8A4_cli_set_krw_plugin(const char* path);
 
 /* Cached Variables */
 extern int init_done;
@@ -164,5 +166,6 @@ extern uint64_t *gc_cached;
 extern int gc_count_cached;
 extern uint64_t *gc_d_cached;
 extern int gc_d_count_cached;
+extern krw_handlers_t krw_handlers;
 
 #endif//X8A4_X8A4_H

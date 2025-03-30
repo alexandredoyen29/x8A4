@@ -13,15 +13,14 @@
  */
 
 /* Include headers */
-#include "Include/libkrw_plugin.h"
-#include "Include/x8A4/Registry/registry.h"
-#include "Include/x8A4/Services/services.h"
 #include <x8A4/Logger/logger.h>
 #include <x8A4/Kernel/osobject.h>
 #include <x8A4/Kernel/nvram.h>
 #include <x8A4/x8A4.h>
 #include <x8A4/Kernel/kpf.h>
+#include <dlfcn.h>
 #include <libkrw.h>
+#include <libkrw_plugin.h>
 
 /* Cached Variables */
 int init_done = 0;
@@ -37,6 +36,7 @@ uint64_t *gc_cached = NULL;
 int gc_count_cached = 0;
 uint64_t *gc_d_cached = NULL;
 int gc_d_count_cached = 0;
+krw_handlers_t krw_handlers = NULL;
 
 /* Functions */
 /**
@@ -1638,4 +1638,40 @@ void x8A4_cli_set_cryptex_seed(const char *new_seed) {
   }
   x8A4_log("Done!\n", "");
   x8A4_log("Successfully set cryptex seed(%s)!\n", new_seed);
+}
+
+void x8A4_cli_set_krw_plugin(const char* path)
+{
+  void* loadedPlugin;
+  krw_plugin_initializer_t pluginInitializer;
+
+  x8A4_log("Loading Kernel I/O plugin %s\n", path);
+
+  if (path == NULL)
+  {
+    return;
+  }
+
+  krw_handlers = calloc(1, sizeof(struct krw_handlers_s));
+
+  if (krw_handlers == NULL)
+  {
+    // TODO : ERROR
+  }
+
+  loadedPlugin = dlopen(path, RTLD_NOW);
+
+  if (loadedPlugin == NULL)
+  {
+    // TODO : ERROR
+  }
+
+  pluginInitializer = dlsym(loadedPlugin, "krw_plugin_initializer");
+
+  if (pluginInitializer == NULL)
+  {
+    // TODO : ERROR (I would like to have monads in C :))
+  }
+
+  pluginInitializer(krw_handlers);
 }
