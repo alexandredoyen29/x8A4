@@ -34,7 +34,15 @@ int kread_wrapper(uint64_t from, void* to, size_t len)
 
 int krw_plugin_initializer(krw_handlers_t handlers)
 {
+    //handlers->version = TODO;
+    //handlers->kbase = TODO;
     handlers->kread = kread_wrapper;
+    //handlers->kwrite = TODO;
+    //handlers->kmalloc = TODO;
+    //handlers->kdealloc = TODO;
+    //handlers->kcall = TODO;
+    //handlers->physread = TODO;
+    //handlers->physwrite = TODO;
 
     return 0;
 }
