@@ -58,6 +58,8 @@ int kwrite_wrapper(void* from, uint64_t to, size_t len)
 
 int krw_plugin_initializer(krw_handlers_t handlers)
 {
+    iokernelrw_open();
+
     //handlers->version = TODO;
     //handlers->kbase = TODO;
     handlers->kread = kread_wrapper;
