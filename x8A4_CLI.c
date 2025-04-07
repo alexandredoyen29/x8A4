@@ -3,7 +3,6 @@
 //
 
 /* Include headers */
-#include <unistd.h>
 #include <x8A4/x8A4.h>
 #include <x8A4/Logger/logger.h>
 #include <getopt.h>
@@ -23,7 +22,6 @@ static struct option x8A4_options[] = {
     {"get-accel-keys", 0, NULL, 'l'},
     {"get-nonce-seeds", 0, NULL, 'd'},
     {"set-cryptex-nonce", required_argument, NULL, 'z'},
-    {"krw_plugin", required_argument, NULL, 'p'},
     {NULL, 0, NULL, 0}
 };
 
@@ -57,8 +55,6 @@ void x8A4_help(const char *cmd) {
   x8A4_log("  %s, %s\t\t\t\t\t%s\n", "-d", "--get-nonce-seeds", "Dumps all of the nonce seeds domains/nonce slots from nvram");
   x8A4_log("\n%sOptions:\n", "Secret Menu ");
   x8A4_log("  %s, %s\t\t\t\t%s\n", "-z", "--set-cryptex-nonce", "Sets a specified Cryptex1 boot seed in nvram(DANGEROUS: BOOTLOOP!)");
-  x8A4_log("\n%sOptions:\n", "KRW Plugin");
-  x8A4_log("  %s, %s\t\t\t\t\t%s\n", "-p" "--krw_plugin", "Loads a plugin that wrap kernel I/Os (Useful to use IOKernelRW for using x8A4 on Apple Silicon Mac)");
 }
 
 /**
@@ -174,20 +170,6 @@ void set_cryptex_seed(const char *new_seed) {
 }
 
 /**
- * @brief        CLI load KRW plugin
- * @param[in]    path Path to the plugin.so
- */
-void set_krw_plugin(const char* path)
-{
-  if (x8A4_init() != 0)
-  {
-    return;
-  }
-
-  x8A4_cli_set_krw_plugin(path);
-}
-
-/**
  * @brief           CLI main
  * @param[in]       argc
  * @param[in]       argv
@@ -241,13 +223,6 @@ int main(int argc, char **argv) {
         if(optarg) {
           set_cryptex_seed(optarg);
         }
-        break;
-      case 'p':
-        if (optarg)
-        {
-          set_krw_plugin(optarg);
-        }
-
         break;
       default:
         x8A4_help(argv[0]);

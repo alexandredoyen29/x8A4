@@ -18,10 +18,7 @@
 #include <x8A4/Kernel/nvram.h>
 #include <x8A4/x8A4.h>
 #include <x8A4/Kernel/kpf.h>
-#include <dlfcn.h>
 #include <libkrw.h>
-#include <libkrw_plugin.h>
-#include <stdlib.h>
 
 /* Cached Variables */
 int init_done = 0;
@@ -37,7 +34,6 @@ uint64_t *gc_cached = NULL;
 int gc_count_cached = 0;
 uint64_t *gc_d_cached = NULL;
 int gc_d_count_cached = 0;
-krw_handlers_t krw_handlers = NULL;
 
 /* Functions */
 /**
@@ -1639,52 +1635,4 @@ void x8A4_cli_set_cryptex_seed(const char *new_seed) {
   }
   x8A4_log("Done!\n", "");
   x8A4_log("Successfully set cryptex seed(%s)!\n", new_seed);
-}
-
-/**
- * @brief          CLI set Kernel I/O plugin
- * @param[in]      path Path to the plugin's compiled '.so'
- */
-void x8A4_cli_set_krw_plugin(const char* path)
-{
-  void* loadedPlugin;
-  krw_plugin_initializer_t pluginInitializer;
-
-  x8A4_log("Loading Kernel I/O plugin %s\n", path);
-
-  if (path == NULL)
-  {
-    x8A4_log("path is NULL (%s:%d)\n", __FILE__, __LINE__);
-    x8A4_destructor();
-    exit(EXIT_FAILURE);
-  }
-
-  krw_handlers = calloc(1, sizeof(struct krw_handlers_s));
-
-  if (krw_handlers == NULL)
-  {
-    x8A4_log("Unable to calloc krw_handlers (%s:%d)\n", __FILE__, __LINE__);
-    x8A4_destructor();
-    exit(EXIT_FAILURE);
-  }
-
-  loadedPlugin = dlopen(path, RTLD_NOW);
-
-  if (loadedPlugin == NULL)
-  {
-    x8A4_log("Unable to dlopen \"%s\" (%s:%d)\n", path, __FILE__, __LINE__);
-    x8A4_destructor();
-    exit(EXIT_FAILURE);
-  }
-
-  pluginInitializer = dlsym(loadedPlugin, "krw_plugin_initializer");
-
-  if (pluginInitializer == NULL)
-  {
-    x8A4_log("Unable to dlsym \"krw_plugin_initializer\" in \"%s\" (%s:%d)\n", path, __FILE__, __LINE__);
-    x8A4_destructor();
-    exit(EXIT_FAILURE);
-  }
-
-  pluginInitializer(krw_handlers);
 }
