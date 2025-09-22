@@ -8,6 +8,30 @@
 
 io_connect_t krw_client = IO_OBJECT_NULL;
 
+int kbase_wrapper(void)
+{
+    kern_return_t result_read;
+    int result;
+
+    if (krw_client == IO_OBJECT_NULL)
+    {
+        krw_client = iokernelrw_open();
+    }
+
+//    result_read = iokernelrw_kbase(krw_client);
+
+    if (result_read == KERN_SUCCESS)
+    {
+        result = 0;
+    }
+    else
+    {
+        result = EDEVERR;
+    }
+
+    return result;
+}
+
 int kread_wrapper(uint64_t from, void* to, size_t len)
 {
     kern_return_t result_read;
