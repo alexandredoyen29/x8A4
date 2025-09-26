@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
+option(MACOS "Enable building for macOS" OFF)
 project(x8A4 C)
 
 set(CMAKE_C_STANDARD 17)
@@ -7,6 +8,14 @@ if(NOT DEFINED CMAKE_OSX_ARCHITECTURES OR arch_not_set)
     set(CMAKE_OSX_ARCHITECTURES arm64)
 endif()
 set(CMAKE_OSX_DEPLOYMENT_TARGET "")
+
+if(MACOS)
+    set(ENT mac_ent.plist)
+    set(BUILD_SDK macosx)
+else()
+    set(ENT tfp0.plist)
+    set(BUILD_SDK iphoneos)
+endif()
 
 find_program(LDID ldid2)
 if(NOT LDID)
@@ -18,7 +27,7 @@ endif()
 
 find_program(XCRUN xcrun)
 if(XCRUN)
-execute_process(COMMAND ${XCRUN} --sdk macosx --show-sdk-path
+execute_process(COMMAND ${XCRUN} --sdk ${BUILD_SDK} --show-sdk-path
         OUTPUT_VARIABLE CMAKE_OSX_SYSROOT
         ERROR_QUIET
         OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -64,10 +73,11 @@ target_include_directories(x8A4 PRIVATE
 set(RPATH "/var/jb/usr/lib")
 set(RPATH2 "/usr/lib")
 set(RPATH3 "/opt/procursus/lib")
+set(RPATH4 "/usr/local/lib")
 set_target_properties(x8A4
         PROPERTIES
 #        LINK_FLAGS "-Wl,-rpath,${RPATH} -Wl,-rpath,${RPATH2} -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/lib/darwin/ -lclang_rt.asan_abi_ios -lclang_rt.asan_ios_dynamic")
-        LINK_FLAGS "-Wl,-rpath,${RPATH} -Wl,-rpath,${RPATH2} -Wl,-rpath,${RPATH3} ")
+        LINK_FLAGS "-Wl,-rpath,${RPATH} -Wl,-rpath,${RPATH2} -Wl,-rpath,${RPATH3} -Wl,-rpath,${RPATH4} ")
 set_target_properties(x8A4
         PROPERTIES
 #        COMPILE_FLAGS "-Wall -Werror -fsanitize=address -fsanitize-address-use-after-scope -fno-omit-frame-pointer")
@@ -104,10 +114,11 @@ target_include_directories(x8A4_CLI PRIVATE "${CMAKE_SOURCE_DIR}/Include")
 set(RPATH "/var/jb/usr/lib")
 set(RPATH2 "/usr/lib")
 set(RPATH3 "/opt/procursus/lib")
+set(RPATH4 "/usr/local/lib")
 set_target_properties(x8A4_CLI
         PROPERTIES
 #        LINK_FLAGS "-Wl,-rpath,${RPATH} -Wl,-rpath,${RPATH2} -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/lib/darwin -lclang_rt.asan_abi_ios -lclang_rt.asan_ios_dynamic")
-        LINK_FLAGS "-Wl,-rpath,${RPATH} -Wl,-rpath,${RPATH2} -Wl,-rpath,${RPATH3} ")
+        LINK_FLAGS "-Wl,-rpath,${RPATH} -Wl,-rpath,${RPATH2} -Wl,-rpath,${RPATH3} -Wl,-rpath,${RPATH4} ")
 set_target_properties(x8A4_CLI
         PROPERTIES
 #        COMPILE_FLAGS "-Wall -Werror -fsanitize=address -fsanitize-address-use-after-scope -fno-omit-frame-pointer")
@@ -127,7 +138,7 @@ add_custom_command(TARGET x8A4 POST_BUILD
 )
 
 add_custom_command(TARGET x8A4_CLI POST_BUILD
-        COMMAND ${LDID} -Stfp0.plist -Hsha256 -Cadhoc ${CMAKE_CURRENT_BINARY_DIR}/x8A4_CLI
+        COMMAND ${LDID} -S${ENT} -Hsha256 -Cadhoc ${CMAKE_CURRENT_BINARY_DIR}/x8A4_CLI
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Signing x8A4_CLI"
 )

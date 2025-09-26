@@ -5,3 +5,12 @@
 cmake-build-*/
 .DS_Store
 .vscode
+krnl
+kernelcache
+*.i64
+*.nam
+*.id0
+*.id1
+*.til
+panic.txt
+IOKernelRW

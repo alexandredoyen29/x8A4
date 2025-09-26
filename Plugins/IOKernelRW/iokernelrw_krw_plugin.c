@@ -2,14 +2,15 @@
 #include <iokernelrw.h>
 #include <mach/arm/kern_return.h>
 #include <mach/kern_return.h>
+#include <mach/mach_error.h>
 #include <sys/errno.h>
+#include <stdio.h>
 
 #include "libkrw_plugin.h"
 
 io_connect_t krw_client = IO_OBJECT_NULL;
 
-int kbase_wrapper(void)
-{
+int kbase_wrapper(uint64_t *to) {
     kern_return_t result_read;
     int result;
 
@@ -18,7 +19,7 @@ int kbase_wrapper(void)
         krw_client = iokernelrw_open();
     }
 
-//    result_read = iokernelrw_kbase(krw_client);
+    result_read = iokernelrw_kbase(krw_client, to);
 
     if (result_read == KERN_SUCCESS)
     {
@@ -80,12 +81,12 @@ int kwrite_wrapper(void* from, uint64_t to, size_t len)
     return result;
 }
 
-int krw_plugin_initializer(krw_handlers_t handlers)
+int krw_initializer(krw_handlers_t handlers)
 {
     iokernelrw_open();
 
     //handlers->version = TODO;
-    //handlers->kbase = TODO;
+    handlers->kbase = kbase_wrapper;
     handlers->kread = kread_wrapper;
     handlers->kwrite = kwrite_wrapper;
     //handlers->kmalloc = TODO;

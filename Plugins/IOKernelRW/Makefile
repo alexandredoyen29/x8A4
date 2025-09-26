@@ -1,6 +1,6 @@
 CC=clang
-CFLAGS=-fPIC -shared
-IPATH=-I../../Include
+CFLAGS=-fPIC -shared -isysroot $(shell xcrun --sdk macosx --show-sdk-path)
+IPATH=-I../../Include -I/usr/local/include
 
 iokernelrw_krw_plugin.dylib: iokernelrw_krw_plugin.c
 	$(CC) $(CFLAGS) $(IPATH) $^ -o $@ -framework IOKit -Wl,-bundle

@@ -443,6 +443,7 @@ uint64_t get_ipc_port(mach_port_name_t port_name) {
       table + (MACH_PORT_INDEX(port_name) * koffsets_cached->ipc_entry_size) +
           koffsets_cached->ipc_entry_object,
       &port, 8);
+  unsign_ptr(&port);
   if (ret || !port) {
     x8A4_log_error("Failed to read port from kernel ipc_entry object! (%d:0x%016llX)\\n", ret, port);
     return 0;
